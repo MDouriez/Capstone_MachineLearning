@@ -56,11 +56,13 @@ VX = np.cumsum(VXi)
 VY = np.cumsum(VYi)
 VZ = np.cumsum(VZi)
 
+#compute values that will be used for thresholds
 DVZ = np.diff(VZ)
 maxDVZ = np.max(np.absolute(DVZ[:50]))
 DVY = np.diff(VY)
 maxDVY = np.max(np.absolute(DVY[:50]))
 
+#set thresholds
 maxDerivativeY = np.max(np.absolute(DY[:60]))
 maxDerivativeZ = np.max(np.absolute(DZ[:60]))
 thresholdMinY = np.min(accY[:30])
@@ -68,6 +70,7 @@ thresholdMaxY = np.max(accY[:30])
 thresholdMinZ = np.min(accZ[:30])
 thresholdMaxZ = np.max(accZ[:30])
 
+# define booleans
 booleanY = accY>thresholdMaxY
 booleanZ1 = accZ>thresholdMaxZ
 booleanZ2 = accZ<thresholdMinZ
@@ -84,7 +87,7 @@ mvtY2 = np.where(np.absolute(DY)>maxDerivativeY,1,0)[:m-2]
 
 mvt = mvtY1 | mvtY2 |mvtZ1 | mvtZ2 | mvtZ3 | mvtZ4| mvtY4
 i = 0
-while i<m-2:
+while i<m-2:  #loop to handles gaps in data aquisition
     if mvt[i]==0:
         print i
         t0 = time[i]
