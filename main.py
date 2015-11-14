@@ -95,7 +95,7 @@ while i<m-2:
             else: break
         print "j: ", j
         timeDiff = time[j] - t0
-        if timeDiff < 1.5:
+        if timeDiff < 1:
             mvt[i:j] = 1
         i = j+1
     else:
