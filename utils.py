@@ -35,7 +35,7 @@ def computeVelocity (accX, accY, accZ, time):
 
     return VX, VY, VZ
 
-def recognizeMvt (accX, accY, accZ, time, p, timeInterval0, timeInterval1):
+def detectMvt (accX, accY, accZ, time, p, timeInterval0, timeInterval1):
     m = accX.shape[0]
     DX, DY, DZ = computeDerivative (accX, accY, accZ, time)
 
@@ -101,10 +101,5 @@ def recognizeMvt (accX, accY, accZ, time, p, timeInterval0, timeInterval1):
             i = j+1
         else:
             i +=1
-
-
-
-
-
 
     return mvt

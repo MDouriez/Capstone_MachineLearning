@@ -31,11 +31,10 @@ accZ -= meanZ
 VX, VY, VZ = utils.computeVelocity (accX, accY, accZ, time)
 DX, DY, DZ = utils.computeDerivative (accX, accY, accZ, time)
 
-
 p = 10
 timeInterval0 = 0.7
 timeInterval1 = 0.5
-mvt = utils.recognizeMvt (accX, accY, accZ, time, p, timeInterval0, timeInterval1)
+mvt = utils.detectMvt (accX, accY, accZ, time, p, timeInterval0, timeInterval1)
 
 data = np.zeros((m-1,2))
 data[:,0] = time[:m-1]
