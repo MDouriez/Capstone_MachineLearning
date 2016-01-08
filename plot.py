@@ -1,38 +1,41 @@
-## plot acceleration data
 
 import numpy as np
-import csv
 import matplotlib.pyplot as plt
 import processFile
 
+# enter sensor type (pressure, accelerometer, humidity, magnetometer, temperature)
+value_type = "pressure"
 
-#######################
-file = "new.csv"
+# enter file name
+file = 'trial bathroom 12 hours sensortag_output_20160106230013 Pressure().csv'
 
-# time, acc = processFile.openFileAcc(file)
-# time, lux = processFile.openFileLux(file)
-time, temp = processFile.openFileTemp(file)
+time, data = processFile.openFile(file, value_type)
 
-#acc = np.genfromtxt(fileOut, delimiter=',', usecols = (2, 3, 4), skip_footer=1)
-# print acc
-# #time = np.genfromtxt(fileOut, delimiter=',', usecols = (0), skip_footer=1)
-# t0 = time[0]
-# print t0
-# time = time - t0
-# # print time
+print data
+print time
 
-# print acc.shape
-#
-# accX = acc[:,0]
-# accY = acc[:,1]
-# accZ = acc[:,2]
-#
+print data.shape
 
-# plt.plot(time, lux, color='r')
-plt.plot(time, temp, color='r')
+if value_type in {"accelerometer", "magnetometer"}:
+    dataX = data[:,0]
+    dataY = data[:,1]
+    dataZ = data[:,2]
 
-# plt.plot(time, accX, color='r')
-# plt.plot(time, accY, color='b')
-# plt.plot(time, accZ, color='g')
+    plt.plot(time, dataX, color='r', label = value_type+'X')
+    plt.plot(time, dataY, color='b', label = value_type+'Y')
+    plt.plot(time, dataZ, color='g', label = value_type+'Z')
 
+elif value_type == "temperature":
+    ambient_temp = data[:,0]
+    object_temp = data[:,1]
+
+    plt.plot(time, ambient_temp, color='r', label = 'ambient_temp')
+    plt.plot(time, object_temp, color='b', label = 'object_temp')
+
+else:
+   plt.plot(time, data, color='r', label = value_type)
+
+
+plt.xlabel('Time (seconds)')
+plt.ylabel(value_type.capitalize())
 plt.show()
