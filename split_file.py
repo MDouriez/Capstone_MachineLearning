@@ -16,8 +16,11 @@ if __name__ == '__main__':
         for nb, row in enumerate(mixed):
             # Find the right output file for type type (second column)
             type_ = row[1]
+
+            # Remove 'mbar' after the pressure value
             if type_ == 'Pressure()':
                 row[2] = row[2].split(" ")[0]
+
             if type_ in output_files:
                 output = output_files[type_][0]
             else:
