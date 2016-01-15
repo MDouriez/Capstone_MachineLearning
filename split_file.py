@@ -1,6 +1,6 @@
 import csv
 
-file_name = 'trial bathroom 12 hours sensortag_output_20160106230013'
+file_name = 'sensortag_output_20160112081645'
 
 if __name__ == '__main__':
     output_files = {}

@@ -3,11 +3,9 @@ from StringIO import StringIO
 import numpy as np
 
 
-
-def openFile(file, type):
+def openFile(file, type, new):
     # extract data from file.
     # type = 'accelerometer' or 'temperature' or 'pressure' or 'magnetometer' or 'humidity' or 'luxometer'
-
 
     # remove quotation marks
     f = open(file, "rb")
@@ -17,19 +15,23 @@ def openFile(file, type):
     w.writerows(r)
     o.seek(0)
 
+    i=0
+    if new:
+        i = 1
+
     # extract sensor values
     if type == 'accelerometer':
-        data = np.genfromtxt(o, delimiter=',', usecols = (2, 3, 4), skip_footer=1)
+        data = np.genfromtxt(o, delimiter=',', usecols=(2+i, 3+i, 4+i), skip_footer=1)
     elif type == 'magnetometer':
-        data = np.genfromtxt(o, delimiter=',', usecols = (10,11,12), skip_footer=1)
+        data = np.genfromtxt(o, delimiter=',', usecols=(10+i,11+i,12+i), skip_footer=1)
     elif type == 'luxometer':
-        data = np.genfromtxt(o, delimiter=',', usecols = (2), skip_footer=1)
+        data = np.genfromtxt(o, delimiter=',', usecols=(2+i), skip_footer=1)
     elif type == 'temperature': #temperature (object + ambient!)
-        data = np.genfromtxt(o, delimiter=',', usecols = (2,4), skip_footer=1)
+        data = np.genfromtxt(o, delimiter=',', usecols=(2+i,4+i), skip_footer=1)
     elif type == 'pressure':
-        data = np.genfromtxt(o, delimiter=',', usecols = (2), skip_footer=1)
+        data = np.genfromtxt(o, delimiter=',', usecols=(2+i), skip_footer=1)
     elif type == 'humidity':
-        data = np.genfromtxt(o, delimiter=',', usecols = (2), skip_footer=1)
+        data = np.genfromtxt(o, delimiter=',', usecols=(2+i), skip_footer=1)
 
     # extract time
     o.seek(0)
@@ -48,6 +50,7 @@ def openFile(file, type):
         year[i], month[i], day[i] = lhs.split("-")
         hour[i], minu[i], sec[i] = rhs.split(":")
     t = day*86400 + hour*3600 + minu*60 + sec
+    t = t/3600
     # print t
 
     # put t0 to 0
