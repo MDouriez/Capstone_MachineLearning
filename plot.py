@@ -1,4 +1,3 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 import processFile
@@ -9,6 +8,9 @@ value_type = "accelerometer"
 # indicate if file type is new (with sensor id) or old (first version of the csv files): True or False
 new = True
 
+# enter file name
+file = 'sensortag_debug_20160110101356_1000lines B0:B4:48:BF:66:85 Accelerometer(G).csv'
+
 unit = {}
 unit['temperature'] = 'C'
 unit['accelerometer'] = 'G'
@@ -17,10 +19,8 @@ unit['magnetometer'] = 'uT'
 unit['pressure'] = 'mbar'
 
 
-# enter file name
-file = 'sensortag_debug_20160110101356_1000lines B0:B4:48:BF:66:85 Accelerometer(G).csv'
-
-time, data = processFile.openFile(file, value_type, new)
+time, data = processFile.openFile(file, value_type, new, False)
+print 'Plotting...'
 
 if value_type == "luxometer":
     m = data.shape[0]
@@ -28,10 +28,10 @@ if value_type == "luxometer":
         if data[i] > 100000:
             data[i] = 200
 
-print data
-print time
+# print data
+# print time
 
-print data.shape
+print 'data.shape: ', data.shape
 
 if value_type in {"accelerometer", "magnetometer"}:
     dataX = data[:,0]

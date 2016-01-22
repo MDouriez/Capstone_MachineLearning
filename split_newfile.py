@@ -22,12 +22,12 @@ if __name__ == '__main__':
                 if type2_ in output_files[type1_]:
                     output = output_files[type1_][type2_][0]
                 else:
-                    output_fp = open(file_name+' %s %s.csv' % (type1_, type2_), 'wb')
+                    output_fp = open(file_name+' %s %s.csv' % (type1_.replace(":",""), type2_.replace(":","")), 'wb')
                     output = csv.writer(output_fp)
                     output_files[type1_][type2_] = output, output_fp
             else:
                 output_files[type1_] = {}
-                output_fp = open(file_name+' %s %s.csv' % (type1_, type2_), 'wb')
+                output_fp = open(file_name+' %s %s.csv' % (type1_.replace(":",""), type2_.replace(":","")), 'wb')
                 output = csv.writer(output_fp)
                 output_files[type1_][type2_] = output, output_fp
 
