@@ -10,10 +10,10 @@ import datetime
 value_type = "magnetometer"
 
 # indicate if file type is new (with sensor id) or old (first version of the csv files): True or False
-new = False
+new = True
 
 # enter file name
-file = 'sensortag_debug_20160110101356 - Bathroom.csv'
+file = '/home/weixing/Documents/Capstone/mesures/flush_lever4.csv'
 
 unit = {}
 unit['temperature'] = 'C'
@@ -39,7 +39,6 @@ if value_type == "luxometer":
 # print data
 # print type(time)
 
-time = time.values()
 # print time.shape
 
 fig, ax = plt.subplots(1)
@@ -48,9 +47,9 @@ if value_type in {"accelerometer", "magnetometer"}:
     dataX = data[:,0]
     dataY = data[:,1]
     dataZ = data[:,2]
-
+    dataN = np.sqrt(dataX*dataX+dataY*dataY+dataZ*dataZ)
     # plt.plot(time, dataX, color='r', label=value_type[:3]+'X')
-    plt.plot(time, dataY, color='c', label=value_type[:3]+'Y')
+    plt.plot(time, dataN, color='c', label=value_type[:3]+'Y')
     # plt.plot(time, dataZ, color='g', label=value_type[:3]+'Z')
 
 elif value_type == "temperature":
@@ -70,9 +69,9 @@ plt.ylabel(value_type.capitalize() + ' (' + unit[value_type] + ')', size=15,  la
 plt.legend(loc='best')
 
 # title of the plot, size: changes frontsize
-plt.title('Magnetic field on the button-type flush', size=20)
+plt.title('Magnetic field on the lever-type flush', size=20)
 
-ax.xaxis.set_major_locator(mdates.HourLocator(np.arange(0, 25, 1)))
+ax.xaxis.set_major_locator(mdates.HourLocator(np.arange(0, 25, 2)))
 # ax.xaxis.set_minor_locator(mdates.HourLocator(np.arange(0, 25, 12)))
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M'))
 # ax.xaxis.set_minor_formatter(mdates.DateFormatter(' %H:%M'))

@@ -27,6 +27,8 @@ def openFile(file, type, new, dates):
     # extract sensor values
     if type == 'accelerometer':
         data = np.genfromtxt(o, delimiter=',', usecols=(2+i, 3+i, 4+i), skip_footer=1)
+    elif type == 'gyroscope':
+        data = np.genfromtxt(o, delimiter=',', usecols=(6+i,7+i,8+i), skip_footer=1)    
     elif type == 'magnetometer':
         data = np.genfromtxt(o, delimiter=',', usecols=(10+i,11+i,12+i), skip_footer=1)
     elif type == 'luxometer':
@@ -44,7 +46,7 @@ def openFile(file, type, new, dates):
 
     # convert time from a date to a number
     m = time.shape[0]
-    t = {}
+    t = []
     year = np.zeros(m)
     month= np.zeros(m)
     day= np.zeros(m)
@@ -60,12 +62,12 @@ def openFile(file, type, new, dates):
         if dates:
             ms[i], sec[i] = math.modf(sec[i])
             ms[i] *= 1000000
-            t[i] = datetime(int(year[i]), int(month[i]), int(day[i]), int(hour[i]), int(minu[i]), int(sec[i]), int(ms[i]))
+            t.append(datetime(int(year[i]), int(month[i]), int(day[i]), int(hour[i]), int(minu[i]), int(sec[i]), int(ms[i])))
             # if i % 10000 ==0: print i
 
     if dates==False:
         t = day*86400 + hour*3600 + minu*60 + sec
-        t = t/3600
+        t = t/60
         # print t
 
         # put t0 to 0
