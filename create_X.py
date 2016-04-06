@@ -14,7 +14,7 @@ import datetime as dt
 import csv
 
 # datetime of reference
-time_reference = dt.datetime(2016,2,20,0,40,50,265999)
+time_reference = dt.datetime(2016,2,25,0,01,00,000000)
 duration = dt.timedelta(14) # 14 days
 
 files = sys.argv[1:]
@@ -46,8 +46,8 @@ for i in xrange(len(data)):
 
 for i in xrange(len(data)):
     # see gap between time ref and beginning of file
-    min_time = dt.datetime.strptime(np.min(data[i].Time_stamp), '%Y-%m-%d %H:%M:%S.%f')
-    max_time = dt.datetime.strptime(np.max(data[i].Time_stamp), '%Y-%m-%d %H:%M:%S.%f')
+    min_time = dt.datetime.strptime(np.min(data[i].Time_stamp), '%Y-%m-%d %H:%M:%S')
+    max_time = dt.datetime.strptime(np.max(data[i].Time_stamp), '%Y-%m-%d %H:%M:%S')
 
     # create an array of min_time- time_reference rows and (1(time) + #features) columns
     features_names = list(data[i].columns)
