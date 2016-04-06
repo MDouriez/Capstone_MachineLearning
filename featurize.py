@@ -1,8 +1,12 @@
-############## README ######### 
-#to change: value_type, file_name, time_reference, name of the output file, 
+'''
+Author: Ludovic
+Input: accelerometer_type, csv_file_name, output_name
+To change: time_reference, name of the output file
 
+'''
 
 ####### script
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -11,17 +15,18 @@ import datetime as dt
 import pandas as pd
 import csv
 
+# reference
+time_reference = dt.datetime(2016,2,20,0,44,50,265999)
+
 # enter sensor type (pressure, accelerometer, humidity, magnetometer, temperature)
-value_type = "accelerometer"
+value_type = sys.argv[1]
 
 # indicate if file type is new (with sensor id) or old (first version of the csv files): True or False
 new = True
 
 # enter file name
-file = 'C:\Users\Ludovic\Documents\Capstone\Capstone_MachineLearning\example.csv'
-
-# reference
-time_reference = dt.datetime(2016,2,20,0,44,50,265999)
+#file = 'C:\Users\Ludovic\Documents\Capstone\Capstone_MachineLearning\example.csv'
+file = sys.argv[2]
 
 time, data = processFile.openFile(file, value_type, new, True)
 print 'data.shape: ' , data.shape
@@ -72,6 +77,11 @@ def hour_of_day(time_stamp):
     # returns the hour of the day of the time window
     return time_stamp.hour
 
+def end_minus_start(vector):
+    # returns the last element of the vector minus the first element of the vector
+    # useful for slow evolutions (eg temperature
+)    return vector.iloc[-1]-vector.iloc[0]
+
 def update_time_window_start(time):
     return time + dt.timedelta(0,60)
 
@@ -89,16 +99,18 @@ count = 0
 
 ######### create feature for each time window
 while count < n:    
-    temp = df[(df['Time'] >= time_window_start) & (df['Time'] < (time_window_start + dt.timedelta(0,60)))]  #select only data in time window
-    count = count + len(temp.Data) # update to have a terminating condition
-    #append features
-    feature_list.append([time_window_start,mean(temp.Data),maxi(temp.Data),mini(temp.Data), max_minus_min(temp.Data), std(temp.Data), variance(temp.Data), RMS(temp.Data), hour_of_day(time_window_start)])
+    temp = df[(df['Time'] >= time_window_start) & (df['Time'] < (time_window_start + dt.timedelta(0,60)))]
+    count = count + len(temp.Data)
+    temp2 = temp[temp['Data'] !=0]
+    feature_list.append([time_window_start,mean(temp2.Data),maxi(temp2.Data),mini(temp2.Data), max_minus_min(temp2.Data), std(temp2.Data), variance(temp2.Data), RMS(temp2.Data),end_minus_start(temp2.Data), hour_of_day(time_window_start)])
     # update time window
     time_window_start = update_time_window_start(time_window_start)
 
 ######## export features in a new csv file
-export = open("sensor.csv", "wb")
+output_name = sys.argv[3]
+
+export = open(output_name, "wb")
 open_file_object = csv.writer(export)
-open_file_object.writerow(["Time_stamp","Mean","Max","Min","Max-Min","Std","Variance","RMS","hour"])
+open_file_object.writerow(["Time_stamp","Mean","Max","Min","Max-Min","Std","Variance","RMS","End-Start","hour"])
 open_file_object.writerows(np.asarray(feature_list))
 export.close()
