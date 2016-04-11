@@ -20,6 +20,7 @@ def openFile(file, type, new, dates):
     w.writerows(r)
     o.seek(0)
 
+
     i=0
     if new:
         i = 1
