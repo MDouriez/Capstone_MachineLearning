@@ -14,6 +14,9 @@ import processFile
 import datetime as dt
 import pandas as pd
 import csv
+from sklearn.preprocessing import maxabs_scale
+from collections import Counter
+
 
 # reference
 time_reference = dt.datetime(2016,2,20,0,01,00,000000)
@@ -23,6 +26,9 @@ value_type = sys.argv[1]
 
 # indicate if file type is new (with sensor id) or old (first version of the csv files): True or False
 new = True
+
+# indicate if hour should be a feature or not
+hour_bool = False
 
 # enter file name
 #file = 'C:\Users\Ludovic\Documents\Capstone\Capstone_MachineLearning\example.csv'
@@ -43,7 +49,7 @@ elif value_type == "temperature":
     #object_temp = data[:,1]
     
 elif value_type == "humidity":
-    dataN = data[:,0] 
+    dataN = data
     
 else:
     print "invalid value_type"
@@ -83,7 +89,7 @@ def end_minus_start(vector):
     if len(vector) >0:
     	return vector.iloc[-1]-vector.iloc[0]
     else:
-    	return 0 
+    	return float("nan")
 
 def update_time_window_start(time):
     return time + dt.timedelta(0,60)
@@ -95,10 +101,32 @@ print "Initializing..."
 
 temp = list(zip(time,dataN))  #temporary list to prepare for the data frame (using pandas)
 df = pd.DataFrame(data = temp, columns = ['Time', 'Data']) #data frame (using pandas)
+
+########## preprocess data 
+
+print "Preprocessing data..."
+if value_type in {"accelerometer", "magnetometer"}:
+    df2 = df[df['Data']!=0]
+
+elif value_type == "temperature":
+    df2 = df[df['Data']<70]
+
+elif value_type == "humidity":
+    c = Counter(df.Data)
+    value_to_remove = c.most_common(1)[0][0] #value that appears the most frequently
+    df2 = df[df['Data']!= value_to_remove]
+    maxabs_scale(df2.Data, copy = False)
+else:
+    print "invalid value type"
+
+print "Data Preprocessed"
+
+########## initialize for featurizing
+
 time_window_start = time_reference 
 feature_list = []
 # number of data points
-n = data.shape[0]
+n = df2.shape[0]
 # counter, to determine how many data points from the file have been processed (so that we know if we should stop or not)
 count = 0
 
@@ -106,27 +134,58 @@ count = 0
 print "Creating features..."
 
 tracker_25 = 0
+tracker_50 = 0
+tracker_75 = 0
 
-while count < n:    
-    temp = df[(df['Time'] >= time_window_start) & (df['Time'] < (time_window_start + dt.timedelta(0,60)))]
-    count = count + len(temp.Data)
-    temp2 = temp[temp['Data'] !=0]
-    feature_list.append([time_window_start,mean(temp2.Data),maxi(temp2.Data),mini(temp2.Data), max_minus_min(temp2.Data), std(temp2.Data), variance(temp2.Data), RMS(temp2.Data),end_minus_start(temp2.Data), hour_of_day(time_window_start)])
-    # update time window
-    time_window_start = update_time_window_start(time_window_start)
-    if ((count/float(n) > .25) and (tracker_25 == 0)): 
-    	tracker_25 = 1
-    	print "25 percent reached"
+if hour_bool:
+    while count < n:    
+        temp = df2[(df2['Time'] >= time_window_start) & (df2['Time'] < (time_window_start + dt.timedelta(0,60)))]
+        count = count + len(temp.Data)
+        feature_list.append([time_window_start,mean(temp.Data),maxi(temp.Data),mini(temp.Data), max_minus_min(temp.Data),
+         std(temp.Data), variance(temp.Data), RMS(temp.Data),end_minus_start(temp.Data),hour_of_day(temp.Data)])
+        # update time window
+        time_window_start = update_time_window_start(time_window_start)
+        if ((count/float(n) > .25) and (tracker_25 == 0)): 
+            tracker_25 = 1
+            print "25 percent reached"
+        if ((count/float(n) > .5) and (tracker_50 == 0)): 
+            tracker_50 = 1
+            print "50 percent reached"
+        if ((count/float(n) > .75) and (tracker_75 == 0)): 
+            tracker_75 = 1
+            print "75 percent reached"
+else:
+    while count < n:    
+        temp = df2[(df2['Time'] >= time_window_start) & (df2['Time'] < (time_window_start + dt.timedelta(0,60)))]
+        count = count + len(temp.Data)
+        feature_list.append([time_window_start,mean(temp.Data),maxi(temp.Data),mini(temp.Data), max_minus_min(temp.Data),
+         std(temp.Data), variance(temp.Data), RMS(temp.Data),end_minus_start(temp.Data)])
+        # update time window
+        time_window_start = update_time_window_start(time_window_start)
+        if ((count/float(n) > .25) and (tracker_25 == 0)): 
+            tracker_25 = 1
+            print "25 percent reached"
+        if ((count/float(n) > .5) and (tracker_50 == 0)): 
+            tracker_50 = 1
+            print "50 percent reached"
+        if ((count/float(n) > .75) and (tracker_75 == 0)): 
+            tracker_75 = 1
+            print "75 percent reached"
 
     
 ######## export features in a new csv file
 print "Exporting..."
 
+df2.to_csv("yolo.csv",index = False)
+
 output_name = sys.argv[3]
 
 export = open(output_name, "wb")
 open_file_object = csv.writer(export)
-open_file_object.writerow(["Time_stamp","Mean","Max","Min","Max-Min","Std","Variance","RMS","End-Start","hour"])
+if hour_bool:
+    open_file_object.writerow(["Time_stamp","Mean","Max","Min","Max-Min","Std","Variance","RMS","End-Start","Hour"])
+else:
+    open_file_object.writerow(["Time_stamp","Mean","Max","Min","Max-Min","Std","Variance","RMS","End-Start"])
 open_file_object.writerows(np.asarray(feature_list))
 export.close()
 
