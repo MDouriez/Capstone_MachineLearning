@@ -1,6 +1,11 @@
 '''
 Script used to detect the usage of a toilet flush 
 
+Run using python plot_lever3.py
+To be changed manually: 
+
+file: file name
+value_type: type of sensor (pressure, accelerometer, humidity, magnetometer, temperature)
 '''
 
 
@@ -30,7 +35,7 @@ unit['gyroscope'] = 'deg/s'
 
 time, data = processFile.openFile(file, value_type, new, False)
 
-
+# depending on the value type, take the norm or not
 if value_type in {"magnetometer"}:
     dataX = data[:,0]
     dataY = data[:,1]
@@ -42,10 +47,9 @@ elif value_type == "accelerometer":
     accelerometerX = data[:,0]
     accelerometerY = data[:,1]
     accelerometerZ = data[:,2]
-    #    plt.plot(time, accelerometerX, color='r', label = value_type+'X')
-    #   plt.plot(time, accelerometerY, color='b', label = value_type+'Y')
-    #  plt.plot(time, accelerometerZ, color='g', label = value_type+'Z')
-
+    # plt.plot(time, accelerometerX, color='r', label = value_type+'X')
+    # plt.plot(time, accelerometerY, color='b', label = value_type+'Y')
+    # plt.plot(time, accelerometerZ, color='g', label = value_type+'Z')
     dataN = np.sqrt(accelerometerX*accelerometerX+accelerometerY*accelerometerY+accelerometerZ*accelerometerZ)
     plt.plot(time, dataN, color='r', label = value_type+'Norm')
 
@@ -129,6 +133,7 @@ print foo
 
 '''
 
+# event detection using a comparison of the max of time window with max of previous time windows
 
 temp = list(zip(time,dataN))  #temporary list to prepare for the data frame (using pandas)
 df = pd.DataFrame(data = temp, columns = ['Time', 'Data']) #data frame (using pandas)
@@ -148,8 +153,6 @@ for i in range(1,int(math.floor(max(time))/window)):
         results.loc[i] = [0,max(temp.Time), max(temp.Data)]
     timer = timer + window 
 
-
-print 'foo'
 percent = 1.2
 
 print 'max range', int(math.floor(max(time))/window)
