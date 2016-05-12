@@ -5,7 +5,7 @@ Authors: Marie Douriez, Ludovic Thea
 Contains code used for data analysis
 
 - **csv files**: contains csv files of processed data collected in Ludovic's house. <br />
---*Annotations Capstone 2.xlsx*: example of annotations file, input of *annotations.py*
+--*Annotations Capstone 2.xlsx*: example of annotations file, input of *annotations.py* <br />
 -- *X_1st_batch.csv*:  data collected just before Springbreak <br />
 --*X_2nd_batch.csv* : data collected just after Springbreak <br />
 --*y.csv, y_alldata.csv*:  labels (activities) <br />
